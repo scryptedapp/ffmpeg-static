@@ -14,11 +14,7 @@ function replaceAll(str: string, find: string, replace: string): string {
     return str.replace(new RegExp(find, 'g'), replace);
 }
 
-function removeExtension(filename: string): string {
-    return path.parse(filename).name;
-}
-
-async function unzipFfmpeg(zipPath: string, ffmpegZipPath = 'ffmpeg', platform: string, arch: string, version: string, suffix = '') {
+async function unzipFfmpeg(zipPath: string, ffmpegZipPath = 'ffmpeg', platform: typeof process.platform, arch: typeof process.arch, version: string, suffix = '') {
     const zip = new AdmZip(zipPath);
     const filename = `ffmpeg-${platform}-${arch}-${version}${suffix}`;
     const ffmpegPath = path.join(path.dirname(zipPath), filename);
@@ -26,7 +22,7 @@ async function unzipFfmpeg(zipPath: string, ffmpegZipPath = 'ffmpeg', platform: 
     return path.join(path.dirname(zipPath), ffmpegPath);
 }
 
-async function untarFfmpeg(tarxzPath: string, ffmpegTarPath = 'ffmpeg', platform: string, arch: string, version: string,  suffix = '') {
+async function untarFfmpeg(tarxzPath: string, platform: typeof process.platform, arch: typeof process.arch, version: string,  suffix = '') {
     const ffmpegPath = path.join(path.dirname(tarxzPath), `ffmpeg-${platform}-${arch}-${version}${suffix}`);
 
     const extractDir = ffmpegPath + '.tmp';
@@ -40,7 +36,6 @@ async function untarFfmpeg(tarxzPath: string, ffmpegTarPath = 'ffmpeg', platform
 }
 
 async function downloadFile(url: string, platform: string, arch: string, version: string, suffix = path.extname(url)) {
-    const u = new URL(url);
     const filename = `ffmpeg-${platform}-${arch}-${version}${suffix}`;
     const downloadPath = path.join(downloadDirectory, filename);
     if (fs.existsSync(downloadPath))
@@ -77,14 +72,18 @@ async function downloadMacAppleArm64(version: string) {
 
 async function downloadLinuxX64(version = 'release') {
     const ffmpegzip = await downloadFile(`https://johnvansickle.com/ffmpeg/releases/ffmpeg-${version}-amd64-static.tar.xz`, 'linux', 'x64', version, '.tar.xz');
-    return untarFfmpeg(ffmpegzip, 'ffmpeg', 'linux', 'x64', packageVersion);
+    return untarFfmpeg(ffmpegzip, 'linux', 'x64', packageVersion);
 }
 
 async function downloadLinuxArm64(version = 'release') {
     const ffmpegzip = await downloadFile(`https://johnvansickle.com/ffmpeg/releases/ffmpeg-${version}-arm64-static.tar.xz`, 'linux', 'x64', version, '.tar.xz');
-    return untarFfmpeg(ffmpegzip, 'ffmpeg', 'linux', 'arm64', packageVersion);
+    return untarFfmpeg(ffmpegzip,  'linux', 'arm64', packageVersion);
 }
 
+async function downloadWindowsX64(version: string) {
+    const ffmpegzip = await downloadFile(`https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-${version}-essentials_build.zip`, 'win32', 'x64', version);
+    return unzipFfmpeg(ffmpegzip, `ffmpeg-${version}-essentials_build/bin/ffmpeg.exe`, 'win32', 'x64', packageVersion, '.exe');
+}
 
 async function main() {
     await downloadMacX64('6.1');
@@ -92,6 +91,8 @@ async function main() {
 
     await downloadLinuxX64();
     await downloadLinuxArm64();
+
+    await downloadWindowsX64('6.1.1');
 }
 
 main();
