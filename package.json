@@ -1,0 +1,19 @@
+{
+  "name": "@scrypted/ffmpeg-static",
+  "version": "6.1.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/scryptedapp/ffmpeg-static.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/scryptedapp/ffmpeg-static/issues"
+  },
+  "homepage": "https://github.com/scryptedapp/ffmpeg-static#readme"
+}
