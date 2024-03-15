@@ -9,6 +9,7 @@ import { once } from 'events';
 import child_process from 'child_process';
 
 const downloadDirectory = path.join(__dirname, '../downloads');
+const artifactDirectory = path.join(__dirname, '../artifacts');
 
 function replaceAll(str: string, find: string, replace: string): string {
     return str.replace(new RegExp(find, 'g'), replace);
@@ -17,19 +18,20 @@ function replaceAll(str: string, find: string, replace: string): string {
 async function unzipFfmpeg(zipPath: string, ffmpegZipPath = 'ffmpeg', platform: typeof process.platform, arch: typeof process.arch, version: string, suffix = '') {
     const zip = new AdmZip(zipPath);
     const filename = `ffmpeg-${platform}-${arch}-${version}${suffix}`;
-    const ffmpegPath = path.join(path.dirname(zipPath), filename);
-    zip.extractEntryTo(ffmpegZipPath, path.dirname(zipPath), false, true, false, filename);
-    return path.join(path.dirname(zipPath), ffmpegPath);
+    const ffmpegPath = path.join(artifactDirectory, filename);
+    zip.extractEntryTo(ffmpegZipPath, artifactDirectory, false, true, false, filename);
+    return ffmpegPath;
 }
 
 async function untarFfmpeg(tarxzPath: string, platform: typeof process.platform, arch: typeof process.arch, version: string,  suffix = '') {
-    const ffmpegPath = path.join(path.dirname(tarxzPath), `ffmpeg-${platform}-${arch}-${version}${suffix}`);
+    const filename = `ffmpeg-${platform}-${arch}-${version}${suffix}`;
+    const extractPath = path.join(downloadDirectory, filename + '.tmp');
 
-    const extractDir = ffmpegPath + '.tmp';
-    fs.promises.mkdir(extractDir, { recursive: true });
-    const cp = child_process.spawn('tar', ['xvf', tarxzPath, '-C', extractDir, '--strip-components=1']);
+    fs.promises.mkdir(extractPath, { recursive: true });
+    const cp = child_process.spawn('tar', ['xvf', tarxzPath, '-C', extractPath, '--strip-components=1']);
     await once (cp,'exit');
-    await fs.promises.rename(path.join(extractDir, 'ffmpeg'), ffmpegPath);
+    const ffmpegPath = path.join(artifactDirectory, filename);
+    await fs.promises.rename(path.join(extractPath, 'ffmpeg'), ffmpegPath);
     return ffmpegPath;
 }
 
@@ -39,7 +41,6 @@ async function downloadFile(url: string, platform: string, arch: string, version
     if (fs.existsSync(downloadPath))
         return downloadPath;
 
-    await fs.promises.mkdir(downloadDirectory, { recursive: true });
     const file = fs.createWriteStream(downloadPath);
     await new Promise((resolve, reject) => {
         https.get(url, response => {
@@ -84,6 +85,9 @@ async function downloadWindowsX64(version: string) {
 }
 
 async function main() {
+    await fs.promises.mkdir(downloadDirectory, { recursive: true });
+    await fs.promises.mkdir(artifactDirectory, { recursive: true });
+
     await downloadMacX64('6.1');
     await downloadMacAppleArm64('6.1.1');
 
