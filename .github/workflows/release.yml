@@ -13,16 +13,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # strategy:
-    #   matrix:
-    #     platform_arch_suffix:
-    #       [
-    #         [darwin, arm64, ""],
-    #         [darwin, x64, ""],
-    #         [linux, arm64, ""],
-    #         [linux, x64, ""],
-    #         [win32, x64, ".exe"],
-    #       ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -32,17 +22,17 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install dependencies
-        run: npm ci
+      - run: npm run dev-install
 
-      - name: Run npm run download
-        run: npm run download
+      - run: npm run build
+      
+      - run: npm run download
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          tag_name: ${{ github.event.inputs.version }}
-          release_name: Release ${{ github.event.inputs.version }}
+          tag_name: v${{ github.event.inputs.version }}
+          release_name: Release v${{ github.event.inputs.version }}
           draft: false
           prerelease: true
           files: artifacts/*
