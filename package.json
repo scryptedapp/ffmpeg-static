@@ -5,6 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
+    "download": "npm run build && node dist/download.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
