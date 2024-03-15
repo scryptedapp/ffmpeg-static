@@ -7,13 +7,37 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version'
+        description: "Version"
         required: true
 
 jobs:
   release:
     runs-on: ubuntu-latest
+    steps:
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          release_name: Release ${{ github.event.inputs.version }}
+          draft: false
+          prerelease: true
 
+  build:
+    needs: release
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform_arch_suffix:
+          [
+            [darwin, arm64, ""],
+            [darwin, x64, ""],
+            [linux, arm64, ""],
+            [linux, x64, ""],
+            [win32, x64, ".exe"],
+          ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -29,22 +53,12 @@ jobs:
       - name: Run npm run download
         run: npm run download
 
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.event.inputs.version }}
-          release_name: Release ${{ github.event.inputs.version }}
-          draft: false
-          prerelease: true
-
       - name: Upload Release Asset
-        id: upload_release_asset
+        id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./artifacts
+          upload_url: ${{ needs.release.outputs.upload_url }}
+          asset_path: ./artifacts/ffmpeg-${{ matrix.platform_arch_suffix[0] }}-${{ matrix.platform_arch_suffix[1] }}-${{ github.event.inputs.version }}${{ matrix.platform_arch_suffix[2] }}
+          asset_name: ffmpeg-${{ matrix.platform_arch_suffix[0] }}-${{ matrix.platform_arch_suffix[1] }}-${{ github.event.inputs.version }}${{ matrix.platform_arch_suffix[2] }}
