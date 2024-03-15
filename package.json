@@ -23,9 +23,13 @@
   "homepage": "https://github.com/scryptedapp/ffmpeg-static#readme",
   "devDependencies": {
     "@types/adm-zip": "^0.5.5",
+    "@types/follow-redirects": "^1.14.4",
     "@types/rimraf": "^4.0.5",
     "adm-zip": "^0.5.12",
     "rimraf": "^5.0.5",
     "typescript": "^5.4.2"
+  },
+  "dependencies": {
+    "follow-redirects": "^1.15.6"
   }
 }

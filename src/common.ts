@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import https from 'https';
+import { https } from 'follow-redirects';
 
 export const artifactDirectory = path.join(__dirname, '../artifacts');
 export const downloadDirectory = path.join(__dirname, '../downloads');
@@ -16,6 +16,14 @@ export function getFfmpegPaths(platform = process.platform, arch = process.arch,
 }
 
 export async function downloadFileCommon(url: string, downloadPath: string) {
+    if (fs.existsSync(downloadPath))
+        return downloadPath;
+
+    console.log('downloading', {
+        url,
+        downloadPath
+    });
+
     const file = fs.createWriteStream(downloadPath);
     await new Promise((resolve, reject) => {
         https.get(url, response => {

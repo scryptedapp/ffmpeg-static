@@ -18,6 +18,8 @@ console.log(ffmpegPath);
 async function install() {
     await fs.promises.mkdir(artifactDirectory, { recursive: true });
     await downloadFileCommon(url, ffmpegPath);
+    if (process.platform !== 'win32')
+        fs.chmodSync(ffmpegPath, 0o755);
 }
 
 install();

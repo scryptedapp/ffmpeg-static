@@ -38,13 +38,6 @@ async function untarFfmpeg(tarxzPath: string, platform: typeof process.platform,
 async function downloadFile(url: string, platform: string, arch: string, version: string, suffix = path.extname(url)) {
     const filename = `ffmpeg-${platform}-${arch}-${version}${suffix}`;
     const downloadPath = path.join(downloadDirectory, filename);
-    if (fs.existsSync(downloadPath))
-        return downloadPath;
-
-    console.log('downloading', {
-        url,
-        downloadPath
-    });
 
     return downloadFileCommon(url, downloadPath);
 }
