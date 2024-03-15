@@ -4,6 +4,7 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,5 +16,19 @@
   "bugs": {
     "url": "https://github.com/scryptedapp/ffmpeg-static/issues"
   },
-  "homepage": "https://github.com/scryptedapp/ffmpeg-static#readme"
+  "homepage": "https://github.com/scryptedapp/ffmpeg-static#readme",
+  "devDependencies": {
+    "@types/adm-zip": "^0.5.5",
+    "@types/lzma": "^2.3.0",
+    "@types/lzma-native": "^4.0.4",
+    "@types/tar": "^6.1.11",
+    "adm-zip": "^0.5.12",
+    "lzma": "^2.3.2",
+    "tar": "^6.2.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.2"
+  },
+  "dependencies": {
+    "lzma-native": "^8.0.6"
+  }
 }
