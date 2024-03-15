@@ -27,9 +27,7 @@ async function untarFfmpeg(tarxzPath: string, platform: typeof process.platform,
 
     const extractDir = ffmpegPath + '.tmp';
     fs.promises.mkdir(extractDir, { recursive: true });
-    const cp = child_process.spawn('tar', ['xzvf', tarxzPath, '-C', extractDir, '--strip-components=1'], {
-        stdio: 'inherit',
-    });
+    const cp = child_process.spawn('tar', ['xvf', tarxzPath, '-C', extractDir, '--strip-components=1']);
     await once (cp,'exit');
     await fs.promises.rename(path.join(extractDir, 'ffmpeg'), ffmpegPath);
     return ffmpegPath;
