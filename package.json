@@ -1,6 +1,6 @@
 {
   "name": "@scrypted/ffmpeg-static",
-  "version": "6.1.0-build1",
+  "version": "6.1.0-build3",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
